@@ -1,19 +1,18 @@
-<h1 tabindex="-1" class="heading-element" dir="auto">
-    <a target="_blank" rel="noopener noreferrer" href="Prez/icon.jpg">
-        <img src="Prez/icon.png" alt="icon" style="height: 1em; vertical-align: middle;">
-    </a>
-    Audio Notifier
-</h1>
-
 [![GitHub license](https://img.shields.io/github/license/L0Lock/AudioNotifier?style=for-the-badge)](https://github.com/L0Lock/AudioNotifier/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.3.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/lauloque)
 
 -----
 
-Gives Blender audio notifications for success, cancel and warning events. Shipped with default sound files under [Creative Commons 0](http://creativecommons.org/publicdomain/zero/1.0/ "Go to the full license text") license.
+![feature](Prez/feature.jpg)
 
-Notifies of the success or cancellation of renders and baking processes.
+- Gives Blender audio notifications for success, cancel and warning events. Shipped with default sound files under [Creative Commons 0](http://creativecommons.org/publicdomain/zero/1.0/ "Go to the full license text") license.
+- Out of the box notifies of the success or cancellation of renders and baking processes.
+- Provides a unified operator reusable for other addons developers to send audio notifications.
 
-Provides a unified operator reusable for other addons developers to send audio notifications.
+## Usage
+
+![prefs](Prez/prefs.jpg)
+
+In the addon's preferences, you can specify a custom sound file for each notification. You can also toggle on/off the render and baking events notifications.
 
 ## Use in your addon
 
