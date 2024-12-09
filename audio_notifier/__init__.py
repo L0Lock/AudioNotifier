@@ -3,7 +3,7 @@ import bpy, aud, os
 bl_info = {
     "name": "Audio Notifier",
     "author": "Loïc \"Lauloque\" Dautry",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (4, 3, 0),
     "location": "Preferences > Add-ons",
     "description": "Plays custom sounds notifications on specific events",
@@ -21,7 +21,7 @@ class PlaySoundOperator(bpy.types.Operator):
     sound_type: bpy.props.StringProperty()  # Ensure this is defined correctly
 
     def execute(self, context):
-        prefs = bpy.context.preferences.addons[__name__].preferences
+        prefs = bpy.context.preferences.addons[__package__].preferences
 
         sound_paths = {
             "cancel": prefs.cancel_audio_path,
@@ -47,7 +47,7 @@ class PlaySoundOperator(bpy.types.Operator):
 
 # Addon Preferences with Playtest Buttons
 class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
-    bl_idname = __name__
+    bl_idname = __package__
     addon_dir = os.path.dirname(__file__)
     cancel_audio_path = os.path.join(addon_dir, "sounds", "cancel.ogg")
     success_audio_path = os.path.join(addon_dir, "sounds", "success.ogg")
@@ -112,24 +112,24 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
 
 ### Handlers for render complete/canceled
 def on_render_complete(scene):
-    prefs = bpy.context.preferences.addons[__name__].preferences
+    prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_render_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="success")
 
 def on_render_cancel(scene):
-    prefs = bpy.context.preferences.addons[__name__].preferences
+    prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_render_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
     
 
 ### Handlers for baking complete/cancel
 def on_bake_complete(scene):
-    prefs = bpy.context.preferences.addons[__name__].preferences
+    prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_bake_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="success")
 
 def on_bake_cancel(scene):
-    prefs = bpy.context.preferences.addons[__name__].preferences
+    prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_bake_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
 
@@ -156,5 +156,5 @@ def unregister():
     bpy.app.handlers.object_bake_cancel.remove(on_bake_cancel)
 
 
-if __name__ == "__main__":
+if __package__ == "__main__":
     register()
