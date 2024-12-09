@@ -15,6 +15,7 @@ bl_info = {
 class PlaySoundOperator(bpy.types.Operator):
     bl_idname = "audio_notifier.play_sound"
     bl_label = "Play Sound"
+    bl_options = {'INTERNAL'}
 
     sound_type: bpy.props.StringProperty()  # Ensure this is defined correctly
 
