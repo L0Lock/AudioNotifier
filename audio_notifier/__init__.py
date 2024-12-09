@@ -12,8 +12,6 @@ bl_info = {
     "category": "System",
 }
 
-
-# Operator to play sound
 class PlaySoundOperator(bpy.types.Operator):
     bl_idname = "audio_notifier.play_sound"
     bl_label = "Play Sound"
@@ -44,8 +42,6 @@ class PlaySoundOperator(bpy.types.Operator):
 
         return {'FINISHED'}
 
-
-# Addon Preferences with Playtest Buttons
 class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
     addon_dir = os.path.dirname(__file__)
@@ -149,12 +145,18 @@ def unregister():
     bpy.utils.unregister_class(AudioNotifierAddonPreferences)
     bpy.utils.unregister_class(PlaySoundOperator)
 
-    # Remove handlers
-    bpy.app.handlers.render_complete.remove(on_render_complete)
-    bpy.app.handlers.render_cancel.remove(on_render_cancel)
-    bpy.app.handlers.object_bake_complete.remove(on_bake_complete)
-    bpy.app.handlers.object_bake_cancel.remove(on_bake_cancel)
+    # Safe remove handlers
+    # Need this to avoid errors when disabling extension,
+    #     apparently some handlers don't get registered
+    #     right away, causing errors.
+    def safe_remove(handler, handler_list):
+        handler_name = handler.__name__
+        if handler in handler_list:
+            handler_list.remove(handler)
+        else:
+            print(f"Handler not found in list: {handler_name}")
 
-
-if __package__ == "__main__":
-    register()
+    safe_remove(on_render_complete, bpy.app.handlers.render_complete)
+    safe_remove(on_render_cancel, bpy.app.handlers.render_cancel)
+    safe_remove(on_bake_complete, bpy.app.handlers.object_bake_complete)
+    safe_remove(on_bake_cancel, bpy.app.handlers.object_bake_cancel)
