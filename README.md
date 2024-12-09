@@ -4,7 +4,7 @@
 
 ![feature](Prez/feature.jpg)
 
-- Gives Blender audio notifications for success, cancel and warning events. Shipped with default sound files under [Creative Commons 0](http://creativecommons.org/publicdomain/zero/1.0/ "Go to the full license text") license.
+- Gives Blender audio notifications for success, cancel and warning events. Shipped with default [sound files](https://freesound.org/s/762132/) under [Creative Commons 0](http://creativecommons.org/publicdomain/zero/1.0/ "Go to the full license text") license. Credits to [IENBA](https://freesound.org/people/IENBA/).
 - Out of the box notifies of the success or cancellation of renders and baking processes.
 - Provides a unified operator reusable for other addons developers to send audio notifications.
 
