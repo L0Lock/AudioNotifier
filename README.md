@@ -12,8 +12,9 @@
 
 ![prefs](Prez/prefs.jpg)
 
-In the addon's preferences, you can specify a custom sound file for each notification. You can also toggle on/off the render and baking events notifications.
-
+In the addon's preferences, you can specify a custom sound file for each notification.  
+Pressing [[&#10229; Backspace]] while hovering a path or using [[Right 🖱️]] > Reset To Default Value will reset it to using the default sound file provided with the addon.  
+You can also toggle on/off the render and baking events notifications if you don't want one of them to occur.
 
 -----
 
