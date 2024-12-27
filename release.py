@@ -100,7 +100,7 @@ def main():
         version_tuple = version_init
     
     create_zip(base_path, version_tuple)
-    print(f"Release zip created: convert_Rotation_Mode_v{version_tuple[0]}-{version_tuple[1]}-{version_tuple[2]}.zip")
+    print(f"Release zip created: extension_{extension_folder}_v{version_tuple[0]}-{version_tuple[1]}-{version_tuple[2]}.zip")
 
 if __name__ == '__main__':
     main()
