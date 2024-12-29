@@ -20,7 +20,7 @@ You can also toggle on/off the render and baking events notifications if you don
 You can download the extension either from:
 
 - Blender's GUI (Preferences > Get Extensions)
-- The [Blender Extension Platform](https://extensions.blender.org/approval-queue/audio-notifier/#activity-5668) (still in approval queue)
+- The [Blender Extension Platform](https://extensions.blender.org/approval-queue/audio-notifier/) (still in approval queue)
 - [This repository's releases page](https://github.com/L0Lock/AudioNotifier/releases).
 
 The installation process is well explained by Blender's official extensions platform documentation:
