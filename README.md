@@ -14,3 +14,15 @@
 In the addon's preferences, you can specify a custom sound file for each notification.  
 Pressing [[&#10229; Backspace]] while hovering a path or using [[Right 🖱️]] > Reset To Default Value will reset it to using the default sound file provided with the addon.  
 You can also toggle on/off the render and baking events notifications if you don't want one of them to occur.
+
+## Installation
+
+You can download the extension either from:
+
+- Blender's GUI (Preferences > Get Extensions)
+- The [Blender Extension Platform](https://extensions.blender.org/approval-queue/audio-notifier/#activity-5668) (still in approval queue)
+- [This repository's releases page](https://github.com/L0Lock/AudioNotifier/releases).
+
+The installation process is well explained by Blender's official extensions platform documentation:
+
+[About — Blender Extensions](https://extensions.blender.org/about/)
