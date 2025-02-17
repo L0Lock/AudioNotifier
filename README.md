@@ -1,4 +1,4 @@
-[![GitHub license](https://img.shields.io/github/license/L0Lock/AudioNotifier?style=for-the-badge)](https://github.com/L0Lock/AudioNotifier/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.3.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/lauloque)
+[![GitHub license](https://img.shields.io/github/license/L0Lock/AudioNotifier?style=for-the-badge)](https://github.com/L0Lock/AudioNotifier/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.3.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/lauloque) [![source](Prez/SourceCodeGithub.jpg)](https://github.com/L0Lock/AudioNotifier)
 
 -----
 
