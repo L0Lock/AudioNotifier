@@ -1,0 +1,22 @@
+[tool.ruff]
+line-length = 79
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle (PEP8 errors)
+    "W",  # pycodestyle (PEP8 warnings)
+    "F",  # Pyflakes (detects undefined names, unused imports, etc.)
+    "I",  # isort (import sorting)
+    "N",  # pep8-naming (enforces PEP8 naming conventions)
+    "UP", # pyupgrade (suggests modern Python syntax)
+    "PL", # pylint-like checks
+    "C4", # flake8-comprehensions (suggests better list/dict/set comprehensions)
+    "B",  # flake8-bugbear (catches potential issues, e.g., mutable defaults)
+    "A",  # flake8-builtins (warns on shadowing built-ins)
+]
+
+# Disable specific checks with explanations
+ignore = [
+    "N801",     # Invalid Class Name when following Blender's naming convention
+]
