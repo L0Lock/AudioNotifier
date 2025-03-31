@@ -3,7 +3,7 @@ import bpy, aud, os
 bl_info = {
     "name": "Audio Notifier",
     "author": "Loïc \"Lauloque\" Dautry",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (4, 3, 0),
     "location": "Preferences > Add-ons",
     "description": "Plays custom sounds notifications on specific events",
@@ -21,6 +21,14 @@ class PlaySoundOperator(bpy.types.Operator):
 
     def execute(self, context):
         prefs = bpy.context.preferences.addons[__package__].preferences
+        if not prefs:
+            self.report(
+                {'ERROR'},
+                "Audio Notifier's preferences not initialized."
+            )
+            return {'CANCELLED'}
+
+        device = prefs.get_device()
 
         sound_paths = {
             "cancel": prefs.cancel_audio_path,
@@ -34,7 +42,6 @@ class PlaySoundOperator(bpy.types.Operator):
             return {'CANCELLED'}
 
         try:
-            device = aud.Device()
             sound = aud.Sound(file_path)
             device.play(sound)
         except Exception as e:
@@ -49,6 +56,7 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
     cancel_audio_path = os.path.join(addon_dir, "sounds", "cancel.ogg")
     success_audio_path = os.path.join(addon_dir, "sounds", "success.ogg")
     warning_audio_path = os.path.join(addon_dir, "sounds", "warning.ogg")
+    device = None
 
     cancel_audio_path: bpy.props.StringProperty(
         name="Cancel Audio Path",
@@ -79,6 +87,12 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
         description="Enable/disable sound for bake completion/cancellation",
         default=True
     )
+
+    def get_device(self):
+        """Ensure a single audio device is used throughout the session."""
+        if self.device is None:
+            self.device = aud.Device()
+        return self.device
 
     def draw(self, context):
         layout = self.layout
@@ -132,8 +146,13 @@ def on_bake_cancel(scene):
 
 
 def register():
+
     bpy.utils.register_class(AudioNotifierAddonPreferences)
     bpy.utils.register_class(PlaySoundOperator)
+
+    prefs = bpy.context.preferences.addons.get(__package__).preferences
+    if prefs:
+        prefs.get_device()
 
     # Register handlers
     bpy.app.handlers.render_complete.append(on_render_complete)
@@ -143,6 +162,7 @@ def register():
 
 
 def unregister():
+
     bpy.utils.unregister_class(AudioNotifierAddonPreferences)
     bpy.utils.unregister_class(PlaySoundOperator)
 
