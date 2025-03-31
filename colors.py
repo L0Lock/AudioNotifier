@@ -1,42 +1,57 @@
-# colors.py
+"""
+Simple print coloring module.
+"""
 
-# Cool Colors (Blues, Cyan, Greens)
-Blue = '\033[94m'
-Cyan = '\033[96m'
-LightCyan = '\033[96m'  # Light Cyan for info
-Green = '\033[92m'
-LightGreen = '\033[92m'  # Light Green for success
+colors: dict[str, str] = {
+    # Cool colors
+    'Blue': '\033[94m',
+    'Cyan': '\033[96m',             # Info
+    'LightCyan': '\033[96m',
+    'Green': '\033[92m',
+    'LightGreen': '\033[92m',       # Success
+    # Warm Colors
+    'Yellow': '\033[38;5;226m',     # Warnings
+    'LightYellow': '\033[93m',
+    'Orange': '\033[38;5;214m',
+    'Red': '\033[91m',              # Errors
+    # Accent Colors
+    'Purple': '\033[95m',
+    'Magenta': '\033[35m',          # Important notes
+    # Neutrals
+    'Grey': '\033[0m',              # Default
+    'White': '\033[1m',
+    # Special Characters
+    'AlertSound': '\007'
+}
 
-# Warm Colors (Yellows, Oranges, Reds)
-Yellow = '\033[38;5;226m'  # Bright Yellow for warnings
-LightYellow = '\033[93m'  # Light Yellow
-Orange = '\033[38;5;214m'  # Orange
-Red = '\033[91m'  # Red for errors
 
-# Accent Colors (Purples, Magentas)
-Purple = '\033[95m'
-Magenta = '\033[35m'  # Magenta for important notes
+def printcol(color, text, alert=False):
+    """Prints text with the specified color.
 
-# Neutrals (Grey, White)
-Grey = '\033[0m'  # Default
-White = '\033[1m'
+    Args:
+        color (str): Key to get the color code from the 'flavor' dict.
+        text (str): Text run through print() but with the specified color.
+        aler (bool): Optional, make a sound if True.
+    """
+    if color in colors:
+        print(f'{colors[color]}{text}{colors["Grey"]}')
+        if alert:
+            print(colors["AlertSound"], end='')
+    else:
+        print(f"Color '{color}' not found!")
+        print(f"Available colors are: {', '.join(colors.keys())}")
 
-# Special Characters
-AlertSound = '\007'
 
-# Function to print colored text
-def printcol(color, text):
-    print(f'{color}{text}{Grey}')
-
-# Function to test all colors
 def test_colors():
-    print("Testing Colors on Dark Background:\n")
-    
-    # Loop through all attributes of the `colors` module dynamically
-    for color_name, color_code in globals().items():
-        # Only select color variables (excluding non-color attributes)
-        if not color_name.startswith('__') and isinstance(color_code, str):
-            printcol(color_code, f'{color_name}')
+    """Prints all color codes in the module to the console for quick reference
+
+    This is useful for testing how the colors look on a dark background and to
+    quickly copy-paste the color codes into any other script.
+    """
+    print("Testing Colors on Dark Background:")
+    for color in colors:
+        printcol(color, f'{color}')
+
 
 # Run the test if the file is executed directly
 if __name__ == "__main__":

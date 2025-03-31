@@ -1,0 +1,4 @@
+# name of the folder containing your extension
+extension = "audio_notifier"
+# path to your blender executable
+blender = "C:/AppInstall/Blender/custom/blender-4.4.0-stable.05377985c527/blender"
