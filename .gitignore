@@ -1,4 +1,6 @@
 # Custom
+*_dev/
+*.sublime*
 Releases/
 *.blend1
 
