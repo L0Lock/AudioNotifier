@@ -165,10 +165,14 @@ def on_bake_cancel(scene):
 
 def register():
     """
-    Register addon.
+    Register addon except if Blender run in CLI with background mode (-b).
     First the classes, then create an audio device to play sounds, then
     register the handlers for each notification event.
     """
+
+    if bpy.app.background:
+        return
+
     bpy.utils.register_class(AudioNotifierAddonPreferences)
     bpy.utils.register_class(AudioNotifier_OT_PlaySound)
 
@@ -184,10 +188,13 @@ def register():
 
 def unregister():
     """
-    Unregister Addon.
+    Unregister Addon except if Blender run in CLI with background mode (-b).
     First the classes, then use a spetific method tosafely remove handlers:
     apparently some handlers don't get registered right away, causing errors.
     """
+
+    if bpy.app.background:
+        return
 
     bpy.utils.unregister_class(AudioNotifierAddonPreferences)
     bpy.utils.unregister_class(AudioNotifier_OT_PlaySound)
