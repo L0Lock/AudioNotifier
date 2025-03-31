@@ -1,18 +1,16 @@
-import bpy, aud, os
+import os
 
-bl_info = {
-    "name": "Audio Notifier",
-    "author": "Loïc \"Lauloque\" Dautry",
-    "version": (1, 0, 2),
-    "blender": (4, 3, 0),
-    "location": "Preferences > Add-ons",
-    "description": "Plays custom sounds notifications on specific events",
-    "warning": "",
-    "wiki_url": "",
-    "category": "System",
-}
+import aud
+import bpy
 
-class PlaySoundOperator(bpy.types.Operator):
+
+class AudioNotifier_OT_PlaySound(bpy.types.Operator):
+    """
+    Plays a sound notification using a sound_type from the addon's prefs:
+        'cancel'
+        'success'
+        'warning'
+    """
     bl_idname = "audio_notifier.play_sound"
     bl_label = "Play Sound"
     bl_options = {'INTERNAL'}
@@ -20,6 +18,7 @@ class PlaySoundOperator(bpy.types.Operator):
     sound_type: bpy.props.StringProperty()  # Ensure this is defined correctly
 
     def execute(self, context):
+        """Execute"""
         prefs = bpy.context.preferences.addons[__package__].preferences
         if not prefs:
             self.report(
@@ -45,12 +44,14 @@ class PlaySoundOperator(bpy.types.Operator):
             sound = aud.Sound(file_path)
             device.play(sound)
         except Exception as e:
-            self.report({'ERROR'}, f"Failed to play sound: {e}")
+            self.report({'ERROR'}, f"An unexpected error occurred: {e}")
             return {'CANCELLED'}
 
         return {'FINISHED'}
 
+
 class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
+    """Addon's Preferences"""
     bl_idname = __package__
     addon_dir = os.path.dirname(__file__)
     cancel_audio_path = os.path.join(addon_dir, "sounds", "cancel.ogg")
@@ -95,66 +96,86 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
         return self.device
 
     def draw(self, context):
+        """Draw"""
         layout = self.layout
-        
+
         layout.label(text="Audio Paths")
         layout.use_property_split = True
-        
+
         row = layout.row(align=True)
         row.prop(self, "cancel_audio_path", text="Cancel")
-        row.operator("audio_notifier.play_sound", text="", icon='PLAY').sound_type = "cancel"
+        row.operator(
+            "audio_notifier.play_sound",
+            text="",
+            icon='PLAY'
+        ).sound_type = "cancel"
 
         row = layout.row(align=True)
         row.prop(self, "success_audio_path", text="Success")
-        row.operator("audio_notifier.play_sound", text="", icon='PLAY').sound_type = "success"
+        row.operator(
+            "audio_notifier.play_sound",
+            text="",
+            icon='PLAY'
+        ).sound_type = "success"
 
         row = layout.row(align=True)
         row.prop(self, "warning_audio_path", text="Warning")
-        row.operator("audio_notifier.play_sound", text="", icon='PLAY').sound_type = "warning"
-        
+        row.operator(
+            "audio_notifier.play_sound",
+            text="",
+            icon='PLAY'
+        ).sound_type = "warning"
+
         layout.label(text="Which events to get notified:")
         layout.use_property_split = True
-        
+
         row = layout.row(align=True)
         row.prop(self, "enable_render_sound", text="Rendering")
         row = layout.row(align=True)
         row.prop(self, "enable_bake_sound", text="Baking")
 
 
-### Handlers for render complete/canceled
 def on_render_complete(scene):
+    """Handler Render Complete"""
     prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_render_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="success")
 
+
 def on_render_cancel(scene):
+    """Handler Render Cancel"""
     prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_render_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
-    
 
-### Handlers for baking complete/cancel
+
 def on_bake_complete(scene):
+    """Handler Bake Complete"""
     prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_bake_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="success")
 
+
 def on_bake_cancel(scene):
+    """Handler Bake Cancel"""
     prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.enable_bake_sound:
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
 
 
 def register():
-
+    """
+    Register addon.
+    First the classes, then create an audio device to play sounds, then
+    register the handlers for each notification event.
+    """
     bpy.utils.register_class(AudioNotifierAddonPreferences)
-    bpy.utils.register_class(PlaySoundOperator)
+    bpy.utils.register_class(AudioNotifier_OT_PlaySound)
 
     prefs = bpy.context.preferences.addons.get(__package__).preferences
     if prefs:
         prefs.get_device()
 
-    # Register handlers
     bpy.app.handlers.render_complete.append(on_render_complete)
     bpy.app.handlers.render_cancel.append(on_render_cancel)
     bpy.app.handlers.object_bake_complete.append(on_bake_complete)
@@ -162,14 +183,15 @@ def register():
 
 
 def unregister():
+    """
+    Unregister Addon.
+    First the classes, then use a spetific method tosafely remove handlers:
+    apparently some handlers don't get registered right away, causing errors.
+    """
 
     bpy.utils.unregister_class(AudioNotifierAddonPreferences)
-    bpy.utils.unregister_class(PlaySoundOperator)
+    bpy.utils.unregister_class(AudioNotifier_OT_PlaySound)
 
-    # Safe remove handlers
-    # Need this to avoid errors when disabling extension,
-    #     apparently some handlers don't get registered
-    #     right away, causing errors.
     def safe_remove(handler, handler_list):
         handler_name = handler.__name__
         if handler in handler_list:

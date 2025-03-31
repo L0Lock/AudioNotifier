@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "audio_notifier"
-version = "1.0.2"
+version = "1.0.3"
 name = "Audio Notifier"
 tagline = "Audio notifications for success, cancel and warning"
 maintainer = "Loïc \"Lauloque\" Dautry"
@@ -11,7 +11,7 @@ website = "https://github.com/L0Lock/AudioNotifier"
 # https://docs.blender.org/manual/en/dev/advanced/extensions/tags.html
 tags = ["System"]
 
-blender_version_min = "4.3.0"
+blender_version_min = "4.4.0"
 # blender_version_max = "5.1.0"
 
 # License conforming to https://spdx.org/licenses/ (use "SPDX: prefix)
