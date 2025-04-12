@@ -163,11 +163,29 @@ def on_bake_cancel(scene):
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
 
 
+def register_handlers(dummy=None):
+    """
+    Register app handlers for render and bake events if not already present.
+    """
+    if bpy.app.background:
+        return
+
+    def add_once(handler, handler_list):
+        if handler not in handler_list:
+            handler_list.append(handler)
+
+    add_once(on_render_complete, bpy.app.handlers.render_complete)
+    add_once(on_render_cancel, bpy.app.handlers.render_cancel)
+    add_once(on_bake_complete, bpy.app.handlers.render_complete)
+    add_once(on_bake_cancel, bpy.app.handlers.render_cancel)
+
+
 def register():
     """
     Register addon except if Blender run in CLI with background mode (-b).
     First the classes, then create an audio device to play sounds, then
-    register the handlers for each notification event.
+    register handlers regularly and in load_post to prevent issues with old
+    blend files.
     """
 
     if bpy.app.background:
@@ -180,16 +198,15 @@ def register():
     if prefs:
         prefs.get_device()
 
-    bpy.app.handlers.render_complete.append(on_render_complete)
-    bpy.app.handlers.render_cancel.append(on_render_cancel)
-    bpy.app.handlers.object_bake_complete.append(on_bake_complete)
-    bpy.app.handlers.object_bake_cancel.append(on_bake_cancel)
+    register_handlers()
+    if register_handlers not in bpy.apps.handlers.load_post:
+        bpy.apps.handlers.load_post.append(register_handlers)
 
 
 def unregister():
     """
     Unregister Addon except if Blender run in CLI with background mode (-b).
-    First the classes, then use a spetific method tosafely remove handlers:
+    First the classes, then use a specific method to safely remove handlers:
     apparently some handlers don't get registered right away, causing errors.
     """
 
@@ -210,3 +227,4 @@ def unregister():
     safe_remove(on_render_cancel, bpy.app.handlers.render_cancel)
     safe_remove(on_bake_complete, bpy.app.handlers.object_bake_complete)
     safe_remove(on_bake_cancel, bpy.app.handlers.object_bake_cancel)
+    safe_remove(register_handlers, bpy.app.handlers.load_post)
