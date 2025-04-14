@@ -175,7 +175,7 @@ def on_render_complete(scene):
     """Handler Render Complete"""
     dprint("Render Complete Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if os.path.isfile(prefs.enable_render_sound):
+    if prefs.enable_render_sound:
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="success")
     else:
@@ -186,7 +186,7 @@ def on_render_cancel(scene):
     """Handler Render Cancel"""
     dprint("Render Cancel Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if os.path.isfile(prefs.enable_render_sound):
+    if prefs.enable_render_sound:
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
     else:
@@ -197,7 +197,7 @@ def on_bake_complete(scene):
     """Handler Bake Complete"""
     dprint("Bake Complete Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if os.path.isfile(prefs.enable_bake_sound):
+    if prefs.enable_bake_sound:
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="success")
     else:
@@ -208,32 +208,43 @@ def on_bake_cancel(scene):
     """Handler Bake Cancel"""
     dprint("Bake Cancel Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if os.path.isfile(prefs.enable_bake_sound):
+    if prefs.enable_bake_sound:
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
     else:
         dprint("  couldn't find sound file!")
 
 
+HANDLERS = [
+    (on_render_complete, bpy.app.handlers.render_complete),
+    (on_render_cancel, bpy.app.handlers.render_cancel),
+    (on_bake_complete, bpy.app.handlers.object_bake_complete),
+    (on_bake_cancel, bpy.app.handlers.object_bake_cancel),
+]
+
+
 def register_handlers(dummy=None):
-    """
-    Register app handlers for render and bake events if not already present.
-    """
+    """Remove old handlers and append fresh ones from HANDLERS"""
     if bpy.app.background:
         return
 
-    def add_once(handler, handler_list):
-        handler_name = handler.__name__
-        if handler not in handler_list:
-            dprint(f"    Appending: {handler_name}")
-            handler_list.append(handler)
-        else:
-            dprint(f"    Found existing: {handler_name}")
+    for func, handler_list in HANDLERS:
+        func_name = func.__name__
+        for existing in list(handler_list):
+            if getattr(existing, "__name__", None) == func_name:
+                handler_list.remove(existing)
+                dprint(f"    Removed:{func_name}")
+        handler_list.append(func)
+        dprint(f"    Registered: {func_name}")
 
-    add_once(on_render_complete, bpy.app.handlers.render_complete)
-    add_once(on_render_cancel, bpy.app.handlers.render_cancel)
-    add_once(on_bake_complete, bpy.app.handlers.render_complete)
-    add_once(on_bake_cancel, bpy.app.handlers.render_cancel)
+    # Handle self load_post registration of this here function
+    self_name = register_handlers.__name__
+    for existing in list(bpy.app.handlers.load_post):
+        if getattr(existing, "__name__", None) == self_name:
+            bpy.app.handlers.load_post.remove(existing)
+            dprint(f"    Removed from load_post: {self_name}")
+    bpy.app.handlers.load_post.append(register_handlers)
+    dprint(f"    Registered from load_post: {self_name}")
 
 
 def register():
@@ -256,9 +267,9 @@ def register():
 
     dprint("Registering AudioNotifier handlers:")
     register_handlers()
-    if register_handlers not in bpy.app.handlers.load_post:
-        dprint("Loadposting AudioNotifier handlers registration.")
-        bpy.app.handlers.load_post.append(register_handlers)
+    # if register_handlers not in bpy.app.handlers.load_post:
+    #     dprint("Loadposting AudioNotifier handlers registration.")
+    #     bpy.app.handlers.load_post.append(register_handlers)
 
 
 def unregister():
@@ -271,20 +282,28 @@ def unregister():
     if bpy.app.background:
         return
 
+    dprint("Unregistering AudioNotifier handlers:")
+
+    for func, handler_list in HANDLERS:
+        func_name = func.__name__
+        for existing in list(handler_list):
+            if getattr(existing, "__name__", None) == func_name:
+                handler_list.remove(existing)
+                dprint(f"    Removed: {func_name}")
+                break
+        else:
+            dprint(f"    Handler not found in list: {func_name}")
+
+    # Remove the load_post entry for register_handlers
+    self_name = register_handlers.__name__
+    for existing in list(bpy.app.handlers.load_post):
+        if getattr(existing, "__name__", None) == self_name:
+            bpy.app.handlers.load_post.remove(existing)
+            dprint(f"    Removed from load_post: {self_name}")
+            break
+    else:
+        dprint("    skipping register_handlers: not found in load_post")
+
+    dprint("Unregistering AudioNotifier classes.")
     bpy.utils.unregister_class(AudioNotifierAddonPreferences)
     bpy.utils.unregister_class(AudioNotifier_OT_PlaySound)
-
-    def safe_remove(handler, handler_list):
-        handler_name = handler.__name__
-        if handler in handler_list:
-            handler_list.remove(handler)
-            dprint(f"    Removed: {handler_name}")
-        else:
-            dprint(f"    Handler not found in list: {handler_name}")
-
-    dprint("Unregistering AudioNotifier handlers:")
-    safe_remove(on_render_complete, bpy.app.handlers.render_complete)
-    safe_remove(on_render_cancel, bpy.app.handlers.render_cancel)
-    safe_remove(on_bake_complete, bpy.app.handlers.object_bake_complete)
-    safe_remove(on_bake_cancel, bpy.app.handlers.object_bake_cancel)
-    safe_remove(register_handlers, bpy.app.handlers.load_post)
