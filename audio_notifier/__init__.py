@@ -39,6 +39,9 @@ class AudioNotifier_OT_PlaySound(bpy.types.Operator):
         if not file_path:
             self.report({'ERROR'}, f"Unknown sound type: {self.sound_type}")
             return {'CANCELLED'}
+        if not os.path.isfile(file_path):
+            dprint(f"Audio file nout found: {file_path}")
+            return {'CANCELLED'}
 
         try:
             sound = aud.Sound(file_path)
