@@ -117,6 +117,10 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
             text="",
             icon='PLAY'
         ).sound_type = "cancel"
+        if not os.path.isfile(self.cancel_audio_path):
+            row = layout.row(align=True)
+            row.label(text="")
+            row.label(text="File not found!", icon='ERROR')
 
         row = layout.row(align=True)
         row.prop(self, "success_audio_path", text="Success")
@@ -125,6 +129,10 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
             text="",
             icon='PLAY'
         ).sound_type = "success"
+        if not os.path.isfile(self.success_audio_path):
+            row = layout.row(align=True)
+            row.label(text="")
+            row.label(text="File not found!", icon='ERROR')
 
         row = layout.row(align=True)
         row.prop(self, "warning_audio_path", text="Warning")
@@ -133,6 +141,10 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
             text="",
             icon='PLAY'
         ).sound_type = "warning"
+        if not os.path.isfile(self.warning_audio_path):
+            row = layout.row(align=True)
+            row.label(text="")
+            row.label(text="File not found!", icon='ERROR')
 
         layout.label(text="Which events to get notified:")
         layout.use_property_split = True
@@ -158,31 +170,46 @@ def dprint(message: str):
 
 def on_render_complete(scene):
     """Handler Render Complete"""
+    dprint("Render Complete Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if prefs.enable_render_sound:
-
+    if os.path.isfile(prefs.enable_render_sound):
+        dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="success")
+    else:
+        dprint("  couldn't find sound file!")
 
 
 def on_render_cancel(scene):
     """Handler Render Cancel"""
+    dprint("Render Cancel Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if prefs.enable_render_sound:
+    if os.path.isfile(prefs.enable_render_sound):
+        dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
+    else:
+        dprint("  couldn't find sound file!")
 
 
 def on_bake_complete(scene):
     """Handler Bake Complete"""
+    dprint("Bake Complete Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if prefs.enable_bake_sound:
+    if os.path.isfile(prefs.enable_bake_sound):
+        dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="success")
+    else:
+        dprint("  couldn't find sound file!")
 
 
 def on_bake_cancel(scene):
     """Handler Bake Cancel"""
+    dprint("Bake Cancel Handler detected")
     prefs = bpy.context.preferences.addons[__package__].preferences
-    if prefs.enable_bake_sound:
+    if os.path.isfile(prefs.enable_bake_sound):
+        dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
+    else:
+        dprint("  couldn't find sound file!")
 
 
 def register_handlers(dummy=None):
