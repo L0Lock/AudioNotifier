@@ -149,6 +149,15 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
             row.label(text="")
             row.label(text="File not found!", icon='ERROR')
 
+        row = layout.row(align=True)
+        row.label(text="")
+        row.label(
+            text=(
+                "Default sounds provided by IENBA under CC0 License on"
+                + " freesound.org"
+            )
+        )
+
         layout.label(text="Which events to get notified:")
         layout.use_property_split = True
 
