@@ -97,7 +97,7 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
             "Menu Windows > Toggle. Helps with debugging issues in "
             "the addon."
         ),
-        default=True
+        default=False
     )
 
     def get_device(self):
@@ -267,9 +267,6 @@ def register():
 
     dprint("Registering AudioNotifier handlers:")
     register_handlers()
-    # if register_handlers not in bpy.app.handlers.load_post:
-    #     dprint("Loadposting AudioNotifier handlers registration.")
-    #     bpy.app.handlers.load_post.append(register_handlers)
 
 
 def unregister():
