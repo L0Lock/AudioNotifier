@@ -44,7 +44,7 @@ class AudioNotifier_OT_PlaySound(bpy.types.Operator):
             return {'CANCELLED'}
 
         try:
-            sound = aud.Sound(file_path)
+            sound = aud.Sound(file_path).loop(prefs.audio_repeat)
             device.volume = prefs.audio_volume
             device.play(sound)
         except Exception as e:
@@ -108,6 +108,16 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
         soft_max=1.0,
         subtype='FACTOR'
     )
+    audio_repeat: bpy.props.IntProperty(
+        name="How many time is the notification played in a row",
+        description=(
+            "Default: 0 (played once). Can be set higher than 4 by"
+            + "typing a value."
+        ),
+        default=0,
+        min=0,
+        soft_max=4,
+    )
 
     def get_device(self):
         """Ensure a single audio device is used throughout the session."""
@@ -124,6 +134,8 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
 
         row = layout.row(align=True)
         row.prop(self, "audio_volume", text="Volume")
+        row = layout.row(align=True)
+        row.prop(self, "audio_repeat", text="Repeat")
 
         layout.label(text="Audio Paths")
         layout.use_property_split = True
