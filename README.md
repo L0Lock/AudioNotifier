@@ -11,9 +11,14 @@
 
 ![prefs](Prez/prefs.jpg)
 
-In the addon's preferences, you can specify a custom sound file for each notification.  
-Pressing [[&#10229; Backspace]] while hovering a path or using [[Right 🖱️]] > Reset To Default Value will reset it to using the default sound file provided with the addon.  
-You can also toggle on/off the render and baking events notifications if you don't want one of them to occur.
+In the addon's preferences, you can chose:
+
+- Audio Volumne
+- Add repetitions
+- Use a custom sound file for each notification.  
+    Pressing [[&#10229; Backspace]] while hovering a path or using [[Right 🖱️]] > Reset To Default Value will reset it to using the default sound file provided with the addon.  
+- Toggle on/off the render and baking events notifications if you don't want one of them to occur. Render events optionally can add notification for each frame of an animation render (the success sound will be half the volume and double the pitch)
+- Enable Developer prints (visible in the consolue using the menu Window > Toggle System Console). This will print a lot of messages in the console, it's useful for developers or bug reports. It can be quite verbose and impact performance, so **use only when needed!**
 
 ## Installation
 
