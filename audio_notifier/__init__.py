@@ -45,6 +45,7 @@ class AudioNotifier_OT_PlaySound(bpy.types.Operator):
 
         try:
             sound = aud.Sound(file_path)
+            device.volume = prefs.audio_volume
             device.play(sound)
         except Exception as e:
             self.report({'ERROR'}, f"An unexpected error occurred: {e}")
@@ -99,6 +100,14 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
         ),
         default=False
     )
+    audio_volume: bpy.props.FloatProperty(
+        name="Volume of audio notifications",
+        description="Default: 1. Can be set higher by typing a value.",
+        default=1.0,
+        min=0.0,
+        soft_max=1.0,
+        subtype='FACTOR'
+    )
 
     def get_device(self):
         """Ensure a single audio device is used throughout the session."""
@@ -109,6 +118,12 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
     def draw(self, context):
         """Draw"""
         layout = self.layout
+
+        layout.label(text="Audio Settings")
+        layout.use_property_split = True
+
+        row = layout.row(align=True)
+        row.prop(self, "audio_volume", text="Volume")
 
         layout.label(text="Audio Paths")
         layout.use_property_split = True
