@@ -15,7 +15,11 @@ class AudioNotifier_OT_PlaySound(bpy.types.Operator):
     bl_label = "Play Sound"
     bl_options = {'INTERNAL'}
 
-    sound_type: bpy.props.StringProperty()  # Ensure this is defined correctly
+    sound_type: bpy.props.StringProperty()
+    is_frame_sound: bpy.props.BoolProperty(
+        default=False,
+        options={'SKIP_SAVE'}
+    )
 
     def execute(self, context):
         """Execute"""
@@ -43,9 +47,14 @@ class AudioNotifier_OT_PlaySound(bpy.types.Operator):
             dprint(f"Audio file nout found: {file_path}")
             return {'CANCELLED'}
 
-        try:
+        if self.is_frame_sound:
+            sound = aud.Sound(file_path).pitch(1.5).loop(prefs.audio_repeat)
+            device.volume = prefs.audio_volume / 2
+        else:
             sound = aud.Sound(file_path).loop(prefs.audio_repeat)
             device.volume = prefs.audio_volume
+
+        try:
             device.play(sound)
         except Exception as e:
             self.report({'ERROR'}, f"An unexpected error occurred: {e}")
@@ -117,6 +126,15 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
         default=0,
         min=0,
         soft_max=4,
+    )
+    audio_frames: bpy.props.BoolProperty(
+        name="Notifies every frame in animation rendering",
+        description=(
+            "Off (default): notifies only at the end of animation renders;\n"
+            "On: notifies each frame of animation renders;\n"
+            "Frames notifications are half the volume and double the pitch."
+        ),
+        default=False,
     )
 
     def get_device(self):
@@ -190,6 +208,11 @@ class AudioNotifierAddonPreferences(bpy.types.AddonPreferences):
 
         row = layout.row(align=True)
         row.prop(self, "enable_render_sound", text="Rendering")
+
+        sub = row.row()
+        sub.enabled = self.enable_render_sound
+        sub.prop(self, "audio_frames", text="All Frames")
+
         row = layout.row(align=True)
         row.prop(self, "enable_bake_sound", text="Baking")
 
@@ -229,6 +252,21 @@ def on_render_cancel(scene):
         dprint(f"  {prefs.enable_render_sound} is disabled, skipping.")
 
 
+def on_render_frame(scene):
+    """Handler for each frame rendered during animation rendering"""
+    dprint("Render Frame Handler detected")
+    prefs = bpy.context.preferences.addons[__package__].preferences
+
+    if prefs.enable_render_sound and prefs.audio_frames:
+        dprint("  audio_frames enabled, playing sound")
+        bpy.ops.audio_notifier.play_sound(
+            sound_type="success",
+            is_frame_sound=True
+        )
+    else:
+        dprint("  enable_render_sound or audio_frames are disabled, skipping.")
+
+
 def on_bake_complete(scene):
     """Handler Bake Complete"""
     dprint("Bake Complete Handler detected")
@@ -254,6 +292,7 @@ def on_bake_cancel(scene):
 HANDLERS = [
     (on_render_complete, bpy.app.handlers.render_complete),
     (on_render_cancel, bpy.app.handlers.render_cancel),
+    (on_render_frame, bpy.app.handlers.render_write),
     (on_bake_complete, bpy.app.handlers.object_bake_complete),
     (on_bake_cancel, bpy.app.handlers.object_bake_cancel),
 ]
