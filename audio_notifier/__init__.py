@@ -215,7 +215,7 @@ def on_render_complete(scene):
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="success")
     else:
-        dprint("  couldn't find sound file!")
+        dprint(f"  {prefs.enable_render_sound} is disabled, skipping.")
 
 
 def on_render_cancel(scene):
@@ -226,7 +226,7 @@ def on_render_cancel(scene):
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
     else:
-        dprint("  couldn't find sound file!")
+        dprint(f"  {prefs.enable_render_sound} is disabled, skipping.")
 
 
 def on_bake_complete(scene):
@@ -237,7 +237,7 @@ def on_bake_complete(scene):
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="success")
     else:
-        dprint("  couldn't find sound file!")
+        dprint(f"  {prefs.enable_bake_sound} is disabled, skipping.")
 
 
 def on_bake_cancel(scene):
@@ -248,7 +248,7 @@ def on_bake_cancel(scene):
         dprint("  found audio file, playing...")
         bpy.ops.audio_notifier.play_sound(sound_type="cancel")
     else:
-        dprint("  couldn't find sound file!")
+        dprint(f"  {prefs.enable_bake_sound} is disabled, skipping.")
 
 
 HANDLERS = [
